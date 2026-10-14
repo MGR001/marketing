@@ -1,26 +1,31 @@
-# Deploy to Render
+# Deploy to Render Free with Git auto-deploys
 
-This project is configured as a Docker-based Render Web Service. The Blueprint file is `render.yaml`.
+This setup uses Render's regular **Web Service** flow, not a Blueprint. The service connects to GitHub and automatically redeploys when `main` changes. Render uses the repository's `Dockerfile` to build the Node.js app and optional CrewAI runtime.
 
-## 1. Push the project to GitHub
+## Create the service
 
-Push the project, including `Dockerfile`, `.dockerignore`, `render.yaml`, and this guide, to the GitHub branch Render should deploy. Do not commit `.env` or real API credentials.
+1. In Render, choose **New → Web Service** (not Blueprint).
+2. Connect GitHub and select `MGR001/marketing`, branch `main`.
+3. Choose **Docker** as the runtime and **Free** as the instance type. Keep the Dockerfile path as `./Dockerfile` and Docker context as `.`.
+4. Set the health-check path to `/health` if the form offers it.
+5. Add these environment variables under **Advanced → Environment Variables**:
+   - `NODE_ENV` = `production`
+   - `APP_BASIC_AUTH_USER` = a username you choose
+   - `APP_BASIC_AUTH_PASSWORD` = a strong, unique password
+   - `OPENAI_API_KEY` = your provider key (needed only for AI generation)
+   - `OPENAI_MODEL` = `openai/gpt-4o-mini` (optional; this is the app default)
+   - `CREWAI_PYTHON` = `/opt/crew-env/bin/python` (the Dockerfile default)
+6. Click **Create Web Service**. In **Settings → Build & Deploy**, leave auto-deploy enabled for `main` (typically **On Commit**).
 
-## 2. Create the Render service
+The Dockerfile supplies the start command (`npm start`) and binds to Render's port. Do not set a `DATA_DIR` mount expecting persistence on Free.
 
-1. In Render, choose **New → Blueprint** and connect `MGR001/marketing`.
-2. Select the `main` branch and apply the Blueprint from `render.yaml`.
-3. Choose/retain the **1 CPU / 2 GB** plan (Render plan ID `1c-2g`) or another paid plan. A persistent disk is included in this configuration; Render persistent disks require a paid web-service plan.
-4. During setup, enter `APP_BASIC_AUTH_USER`, a long unique `APP_BASIC_AUTH_PASSWORD`, and `OPENAI_API_KEY` when prompted for unsynced environment variables. Keep these values private. `OPENAI_MODEL` defaults to `openai/gpt-4o-mini`.
+## Free-tier limitations
 
-The Blueprint builds Node.js and the CrewAI Python environment into one Docker image, listens on Render's assigned port, protects the app with HTTP Basic Authentication, and mounts a 1 GB persistent disk at `/var/data` for the timeline, agent profiles, and saved runs. On the first deploy, the app seeds missing files on the disk from the included `data/` defaults; later deploys preserve the disk's contents. Render takes the service offline briefly during redeploys when a persistent disk is attached.
+- Git auto-deploy syncs **code** from GitHub; it does not commit edits made in the timeline editor back to GitHub.
+- Render Free has an ephemeral filesystem. Timeline edits, agent-profile edits, saved runs, and human approvals can be lost on restarts, deploys, or when the service spins down after 15 minutes without traffic. The app reseeds from the JSON files included in the deployed commit. Keep important changes in local backups/Git yourself.
+- The Free instance has 512 MB RAM and may spin up slowly after idle. The basic timeline and editor should be suitable for a small test; CrewAI generation may exceed the free instance's memory or time limits. OpenAI API usage may also incur charges.
+- Render provides 750 free instance-hours per workspace each month; usage and other free-tier limits apply. Free hosting is best-effort, not production-grade.
 
-## 3. Open the service
+## Security
 
-Wait for the deploy and `/health` check to pass, then open the `onrender.com` service URL. The browser will prompt for the Basic Auth username and password. The timeline editor, reports, and AI workbench all use the same sign-in. AI generation uses the configured provider key and may incur charges.
-
-## Notes
-
-- This is a single-user access gate, not per-user accounts or an audit trail. Use a strong, unique password and share it only with intended users.
-- The app data disk is persistent but is not a backup. Download/copy important data backups separately.
-- Never add `.env`, passwords, or API keys to GitHub. The Docker build explicitly excludes local environment files.
+The app requires `APP_BASIC_AUTH_USER` and `APP_BASIC_AUTH_PASSWORD` in production. Keep credentials and API keys in Render's environment settings, never in GitHub or chat. If an API key has been exposed, revoke it with the provider and replace it before deploying.
