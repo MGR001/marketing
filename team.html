@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101613" />
+    <title>Marketing team · Libra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="team.css" />
+    <script src="team.js" defer></script>
+  </head>
+  <body class="team-page">
+    <header class="team-topbar">
+      <a class="team-brand" href="/" aria-label="Back to Libra timeline"><span>Libra</span><i aria-hidden="true">×</i> WK LR Benelux</a>
+      <nav aria-label="Marketing workspaces">
+        <a href="/">Timeline</a>
+        <a href="/admin.html">Manage timeline</a>
+      </nav>
+    </header>
+
+    <main class="team-shell">
+      <section class="team-intro">
+        <div>
+          <p class="eyebrow">AI WORKSPACE / BENELUX</p>
+          <h1>Your marketing <em>team.</em></h1>
+          <p class="team-lede">One clear brief. A coordinated crew. Research, strategy, planning, creative, and complete content assets—reviewed at every step by your Go-To-Market Lead.</p>
+        </div>
+        <div class="crew-status" id="crew-status" role="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="crew-status-text">Checking team setup…</span>
+          <a id="setup-link" href="/CREWAI_SETUP.md" hidden>Setup steps</a>
+        </div>
+      </section>
+
+      <section class="crew-roster" id="crew-roster" aria-label="Your CrewAI marketing team" aria-live="polite"></section>
+
+      <div class="workbench-grid">
+        <section class="panel brief-panel" aria-labelledby="brief-title">
+          <div class="panel-heading">
+            <div><p class="eyebrow">01 / THE BRIEF</p><h2 id="brief-title">What are we building?</h2></div>
+            <span class="panel-marker" aria-hidden="true">＋</span>
+          </div>
+          <p class="panel-intro">Give the crew the context it needs. More detail makes for a more useful first draft.</p>
+          <form id="brief-form">
+            <label class="field"><span>Brand, product, or campaign <b>*</b></span><input name="brand" maxlength="120" required placeholder="e.g. Libra AI Workspace — autumn launch" /></label>
+            <div class="field-pair">
+              <label class="field"><span>Primary objective <b>*</b></span><select name="objective" required><option value="">Choose an objective</option><option>Build awareness</option><option>Generate qualified leads</option><option>Drive product adoption</option><option>Increase sales or conversion</option><option>Strengthen brand preference</option><option>Launch a product or feature</option><option>Other / multiple objectives</option></select></label>
+              <label class="field"><span>Target audience <b>*</b></span><input name="audience" maxlength="500" required placeholder="Who do we need to reach?" /></label>
+            </div>
+            <div class="field-pair">
+              <label class="field"><span>Market and context</span><input name="market" maxlength="500" placeholder="e.g. Netherlands & Belgium; category context" /></label>
+              <label class="field"><span>Offer or key benefit</span><input name="offer" maxlength="500" placeholder="What should people understand or do?" /></label>
+            </div>
+            <div class="field-pair">
+              <label class="field"><span>Priority channels</span><input name="channels" maxlength="300" placeholder="e.g. LinkedIn, email, events" /></label>
+              <label class="field"><span>Desired tone</span><input name="tone" maxlength="180" placeholder="e.g. confident, warm, plain-spoken" /></label>
+            </div>
+            <label class="field"><span>Connect to a timeline item</span><select name="timelineContext" id="timeline-context"><option value="">No timeline item</option></select></label>
+            <label class="field"><span>Constraints, proof points, or extra context</span><textarea name="constraints" rows="4" maxlength="2000" placeholder="Include timing, budget guardrails, must-use messages, claims to avoid, or other context."></textarea></label>
+            <div class="form-footer"><p>Outputs are drafts for your team to review. The crew will label assumptions and avoid unsupported claims.</p><button class="button button-primary" type="submit" id="run-crew"><span aria-hidden="true">✳</span> Build the campaign plan</button></div>
+          </form>
+        </section>
+
+        <section class="panel output-panel" aria-labelledby="output-title">
+          <div class="panel-heading output-heading">
+            <div><p class="eyebrow">02 / CREW OUTPUT</p><h2 id="output-title">The workbench</h2></div>
+            <div class="output-actions"><button class="button button-quiet" id="copy-output" type="button" disabled>Copy plan</button><a class="button button-secondary" id="open-structured-output" href="/team-output.html" hidden>Structured report ↗</a></div>
+          </div>
+          <div class="crew-flow" id="crew-flow" aria-label="Crew execution flow" aria-live="polite" hidden></div>
+          <div class="empty-state" id="empty-state"><span aria-hidden="true">✳</span><h3>Your next campaign starts here.</h3><p>Complete the brief and bring in five specialists and their Go-To-Market Lead. Every deliverable is reviewed and corrected before work moves forward.</p></div>
+          <div class="run-progress" id="run-progress" hidden><span class="progress-orbit" aria-hidden="true"></span><div><strong>The crew is working together</strong><p id="progress-text">Starting with market context…</p></div></div>
+          <div class="review-activity" id="review-activity" aria-live="polite" hidden></div>
+          <p class="run-error" id="run-error" role="alert" hidden></p>
+          <div class="output-list" id="output-list" aria-live="polite"></div>
+          <div class="report-footer" id="report-footer" hidden><span id="report-meta"></span><button class="button button-secondary" id="download-output" type="button">Download .md</button></div>
+        </section>
+      </div>
+
+      <section class="history-section" aria-labelledby="history-title">
+        <div class="history-heading"><div><p class="eyebrow">03 / RECENT WORK</p><h2 id="history-title">Saved crew runs</h2></div><span id="history-count">0</span></div>
+        <div class="history-list" id="history-list"><p class="history-empty">Completed plans will be saved here on this computer.</p></div>
+      </section>
+      <p class="privacy-note">Local workspace · Your provider key stays on the server and is never sent to this page.</p>
+    </main>
+    <dialog class="agent-dialog" id="agent-dialog" aria-labelledby="agent-dialog-title">
+      <form id="agent-form" method="dialog">
+        <input type="hidden" name="id" />
+        <div class="agent-dialog-heading"><div><p class="eyebrow">EDIT TEAM SPECIALIST</p><h2 id="agent-dialog-title">Agent details</h2></div><button class="agent-dialog-close" type="button" aria-label="Close editor">×</button></div>
+        <label class="field"><span>Display name</span><input name="name" maxlength="80" required /></label>
+        <label class="field"><span>Specialty label</span><input name="specialty" maxlength="80" required /></label>
+        <label class="field"><span>Card summary</span><textarea name="summary" rows="2" maxlength="240" required></textarea></label>
+        <label class="field"><span>Agent role</span><input name="role" maxlength="180" required /></label>
+        <label class="field"><span>Agent goal</span><textarea name="goal" rows="3" maxlength="700" required></textarea></label>
+        <label class="field"><span>Agent backstory</span><textarea name="backstory" rows="4" maxlength="1000" required></textarea></label>
+        <p class="agent-save-status" id="agent-save-status" role="status" aria-live="polite"></p>
+        <div class="agent-dialog-actions"><button class="button button-quiet" id="agent-cancel" type="button">Cancel</button><button class="button button-primary" type="submit">Save agent</button></div>
+      </form>
+    </dialog>
+  </body>
+</html>

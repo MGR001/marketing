@@ -1,0 +1,201 @@
+{
+  "year": 2026,
+  "themes": [
+    {
+      "id": "theme-q1",
+      "period": "01 · JAN — MAR",
+      "name": "."
+    },
+    {
+      "id": "theme-q2",
+      "period": "02 · APR — JUN",
+      "name": "."
+    },
+    {
+      "id": "theme-q3",
+      "period": "03 · JUL — SEP",
+      "name": "Zonder Twijfel Wave 1"
+    },
+    {
+      "id": "theme-q4",
+      "period": "04 · OCT — DEC",
+      "name": "Zonder Twijfel Wave 2"
+    }
+  ],
+  "launches": [
+    {
+      "id": "launch-libra-public",
+      "title": "Libra Public",
+      "date": "2026-09-22",
+      "subtitle": "Product launch",
+      "description": "Launch scheduled for September 22, 2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-monkey-be-1b",
+      "title": "Libra x Monkey BE v1",
+      "description": "Launch scheduled for May 12, 2026.",
+      "date": "2026-05-12",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-entitlement-based-libra-nl-libra-x-legal-intelligence",
+      "title": "Entitlement Based Libra NL",
+      "description": "Launch scheduled for July 14, 2026.",
+      "date": "2026-07-14",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-entitlement-based-libra-be",
+      "title": "Entitlement Based Libra BE",
+      "description": "Launch scheduled for July 14, 2026.",
+      "date": "2026-07-14",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "5cb85780-a1ae-4213-8260-20dc53b224f9",
+      "title": "Libra X Legal Inteliigence",
+      "description": "Launch scheduled for July 14, 2026.",
+      "date": "2026-07-14",
+      "subtitle": "Libra X Legal Inteliigence",
+      "activities": []
+    },
+    {
+      "id": "launch-migratie-aid-libra",
+      "title": "Migratie AID - Libra Kick-Off BE+NL",
+      "description": "Launch scheduled for September 24, 2026.",
+      "date": "2026-09-24",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-addin-v2-be-monkey",
+      "title": "Libra X MonKey Add-In v2 BE",
+      "description": "Launch scheduled for September 24, 2026.",
+      "date": "2026-09-24",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-addin-v2-nl-li",
+      "title": "Libra X LI Add-In NL",
+      "description": "Launch scheduled for August 31, 2026.",
+      "date": "2026-08-31",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-x-socialeye",
+      "title": "Libra x SocialEye Add in + Toggle BE",
+      "description": "Launch scheduled for October 13, 2026.",
+      "date": "2026-10-20",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-x-be-full-launch",
+      "title": "Libra X IVL BE Toggle",
+      "description": "Launch scheduled for June 8, 2026.",
+      "date": "2026-06-08",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-addin-v2-nl-inview-legal",
+      "title": "Libra X IVL NL Add-In",
+      "description": "Launch scheduled for October 15, 2026.",
+      "date": "2026-10-15",
+      "subtitle": "Product launch",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-addin-v2-be-inview-legal",
+      "title": "Libra X IVL Add-In BE",
+      "description": "Launch scheduled for July 31, 2026.",
+      "date": "2026-07-31",
+      "subtitle": "Product launch",
+      "activities": []
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "campaign-holiday-preview",
+      "lane": "selling",
+      "title": "Holiday preview",
+      "start": "2026-10-05",
+      "end": "2026-11-22",
+      "description": "An early gifting campaign designed to build intent ahead of peak season with curated gift guides, segmented email, and retail partner placements."
+    },
+    {
+      "id": "campaign-everyday-edit",
+      "title": "Zekerheid begint bij de bron",
+      "description": "XXX",
+      "lane": "branding",
+      "start": "2026-09-28",
+      "end": "2026-10-25"
+    },
+    {
+      "id": "campaign-summer-colour",
+      "title": "AI met recht van spreken",
+      "description": "XXX",
+      "lane": "branding",
+      "start": "2026-10-26",
+      "end": "2026-11-22"
+    },
+    {
+      "id": "campaign-long-run",
+      "title": "Zeker van je zaak",
+      "description": "XXX",
+      "lane": "branding",
+      "start": "2026-11-23",
+      "end": "2026-12-31"
+    }
+  ],
+  "alwaysOn": {
+    "id": "always-on-presence",
+    "title": "Year-round presence",
+    "start": "2026-01-01",
+    "end": "2026-12-31",
+    "description": "Search Advertising (SEA)\nPeriodical Newsletters to (ABM) customers\nOnboarding / Libra Academy\nLeadnurturing and rejection emails\nIn-product upsell messaging"
+  },
+  "events": [
+    {
+      "id": "event-winter-market",
+      "title": "Winter Market",
+      "date": "2026-02-05",
+      "subtitle": "Fieldhouse pop-up",
+      "description": "A Fieldhouse pop-up featuring a curated product display, seasonal refreshments, and an informal preview for local customers and press."
+    },
+    {
+      "id": "event-earth-week",
+      "title": "Earth Week",
+      "date": "2026-04-23",
+      "subtitle": "Community & press day",
+      "description": "A community and press day centered on responsible materials, practical care, and conversations with the people behind the products."
+    },
+    {
+      "id": "event-summer-sessions",
+      "title": "Summer Sessions",
+      "date": "2026-08-11",
+      "subtitle": "Live brand experience",
+      "description": "A live summer gathering with product discovery, a short creative program, and shareable moments for guests and community partners."
+    },
+    {
+      "id": "event-partner-summit",
+      "title": "Partner Summit",
+      "date": "2026-10-08",
+      "subtitle": "New-season preview",
+      "description": "A preview for retail partners covering the next season’s assortment, merchandising story, and launch calendar."
+    },
+    {
+      "id": "event-year-end-studio",
+      "title": "Year-End Studio",
+      "date": "2026-12-02",
+      "subtitle": "Community gathering",
+      "description": "A year-end community gathering celebrating creative collaborators, customers, and the stories made throughout the year."
+    }
+  ]
+}

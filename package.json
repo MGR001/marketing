@@ -1,0 +1,10 @@
+{
+  "name": "libra-marketing-timeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local marketing timeline and content editor",
+  "scripts": {
+    "start": "node server.js",
+    "crew:install": "if [ ! -x .crew-env/bin/python ]; then uv venv --python 3.13 .crew-env; fi && uv pip install --python .crew-env/bin/python -r requirements-crewai.txt"
+  }
+}

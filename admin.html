@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101613" />
+    <title>Timeline editor · Libra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="admin.css" />
+    <script src="admin.js" defer></script>
+  </head>
+  <body>
+    <header class="admin-topbar">
+      <a class="admin-brand" href="/" aria-label="Back to Libra timeline"><span>Libra</span><i aria-hidden="true">×</i> WK LR Benelux</a>
+      <div class="admin-topbar-actions">
+        <span>Marketing timeline · 2026</span>
+        <a class="button button-light" href="/">View timeline</a>
+      </div>
+    </header>
+
+    <main class="admin-shell">
+      <section class="admin-intro">
+        <p class="eyebrow">CONTENT WORKSPACE / BENELUX</p>
+        <h1>Timeline entries</h1>
+        <p>Manage launches, campaigns, and events. Updates are saved to the local timeline data and appear on the public view.</p>
+      </section>
+
+      <p class="admin-status" id="admin-status" role="status" aria-live="polite" hidden></p>
+
+      <div class="admin-grid">
+        <section class="admin-panel entry-editor" aria-labelledby="entry-heading">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">01 / CONTENT</p>
+              <h2 id="entry-heading">Add an entry</h2>
+            </div>
+            <span class="panel-marker" aria-hidden="true">＋</span>
+          </div>
+
+          <form id="entry-form">
+            <input id="entry-id" type="hidden" />
+            <div class="form-row form-row-two">
+              <label class="field">
+                <span>Entry type</span>
+                <select id="entry-type" required>
+                  <option value="launch">Product launch</option>
+                  <option value="campaign">Campaign</option>
+                  <option value="event">Event</option>
+                </select>
+              </label>
+              <label class="field" id="lane-field" hidden>
+                <span>Campaign lane</span>
+                <select id="entry-lane">
+                  <option value="branding">Branding</option>
+                  <option value="selling">Selling</option>
+                </select>
+              </label>
+              <label class="field" id="date-field">
+                <span id="date-label">Launch date</span>
+                <input id="entry-date" type="date" />
+              </label>
+              <label class="field" id="start-date-field" hidden>
+                <span>Start date</span>
+                <input id="entry-start" type="date" />
+              </label>
+              <label class="field" id="end-date-field" hidden>
+                <span>End date</span>
+                <input id="entry-end" type="date" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Title</span>
+              <input id="entry-title" type="text" maxlength="120" placeholder="e.g. Summer, revealed" required />
+            </label>
+
+            <label class="field" id="subtitle-field">
+              <span>Short label</span>
+              <input id="entry-subtitle" type="text" maxlength="180" placeholder="Shown beneath the title on the timeline" />
+            </label>
+
+            <label class="field">
+              <span>Details</span>
+              <textarea id="entry-description" rows="4" maxlength="2000" placeholder="Add context, objective, channels, or supporting information" required></textarea>
+            </label>
+
+            <label class="field" id="activities-field" hidden>
+              <span>Related marketing activities <small>One item per line</small></span>
+              <textarea id="entry-activities" rows="4" maxlength="1500" placeholder="Creator previews&#10;Launch-day email&#10;Paid social"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="button button-primary" type="submit" id="entry-submit">Save entry</button>
+              <button class="button button-quiet" type="button" id="entry-cancel" hidden>Cancel edit</button>
+              <span class="form-hint">Dates must fall within 2026.</span>
+            </div>
+          </form>
+        </section>
+
+        <section class="admin-panel saved-entries" aria-labelledby="entries-heading">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">02 / SCHEDULE</p>
+              <h2 id="entries-heading">Saved entries</h2>
+            </div>
+            <span class="entry-count" id="entry-count">0</span>
+          </div>
+          <div class="entry-list" id="entry-list" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <div class="admin-settings-grid">
+        <section class="admin-panel" aria-labelledby="themes-heading">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">03 / CAMPAIGN ZONES</p>
+              <h2 id="themes-heading">Seasonal themes</h2>
+            </div>
+          </div>
+          <form id="themes-form" class="themes-form">
+            <div class="theme-fields" id="theme-fields"></div>
+            <button class="button button-secondary" type="submit">Save themes</button>
+          </form>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="always-on-heading">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">04 / YEAR-ROUND</p>
+              <h2 id="always-on-heading">Always On bar</h2>
+            </div>
+          </div>
+          <form id="always-on-form" class="always-on-form">
+            <label class="field">
+              <span>Bar title</span>
+              <input id="always-on-title" type="text" maxlength="120" required />
+            </label>
+            <div class="form-row form-row-two">
+              <label class="field">
+                <span>Start date</span>
+                <input id="always-on-start" type="date" required />
+              </label>
+              <label class="field">
+                <span>End date</span>
+                <input id="always-on-end" type="date" required />
+              </label>
+            </div>
+            <label class="field">
+              <span>Details</span>
+              <textarea id="always-on-description" rows="3" maxlength="2000" required></textarea>
+            </label>
+            <button class="button button-secondary" type="submit">Save Always On</button>
+          </form>
+        </section>
+      </div>
+
+      <footer class="admin-footer">
+        <span>Changes are stored locally on this computer.</span>
+        <span>This editor is for local use and is not password-protected.</span>
+      </footer>
+    </main>
+  </body>
+</html>
