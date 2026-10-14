@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: libra-marketing
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: DATA_DIR
+        value: /var/data
+      - key: CREWAI_PYTHON
+        value: /opt/crew-env/bin/python
+      - key: OPENAI_MODEL
+        value: openai/gpt-4o-mini
+      - key: APP_BASIC_AUTH_USER
+        sync: false
+      - key: APP_BASIC_AUTH_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+    disk:
+      name: libra-marketing-data
+      mountPath: /var/data
+      sizeGB: 1

@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+!.env.example
+.crew-env
+.venv
+node_modules
+__pycache__
+*.py[cod]
+.DS_Store

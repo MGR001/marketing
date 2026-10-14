@@ -122,14 +122,6 @@
   ],
   "campaigns": [
     {
-      "id": "campaign-holiday-preview",
-      "lane": "selling",
-      "title": "Holiday preview",
-      "start": "2026-10-05",
-      "end": "2026-11-22",
-      "description": "An early gifting campaign designed to build intent ahead of peak season with curated gift guides, segmented email, and retail partner placements."
-    },
-    {
       "id": "campaign-everyday-edit",
       "title": "Zekerheid begint bij de bron",
       "description": "XXX",
@@ -152,6 +144,14 @@
       "lane": "branding",
       "start": "2026-11-23",
       "end": "2026-12-31"
+    },
+    {
+      "id": "campaign-holiday-preview",
+      "title": "AID -> Libra migration BE start",
+      "description": "X",
+      "lane": "selling",
+      "start": "2026-10-05",
+      "end": "2026-10-11"
     }
   ],
   "alwaysOn": {

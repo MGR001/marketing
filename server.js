@@ -3,18 +3,9 @@ const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
-const { randomUUID } = require('node:crypto');
+const { createHash, randomUUID, timingSafeEqual } = require('node:crypto');
 
-const HOST = '127.0.0.1';
-const PORT = Number(process.env.PORT || 8000);
 const ROOT = __dirname;
-const DATABASE = path.join(ROOT, 'data', 'timeline.json');
-const TEAM_DATABASE = path.join(ROOT, 'data', 'team-runs.json');
-const TEAM_AGENTS_DATABASE = path.join(ROOT, 'data', 'team-agents.json');
-const CREW_RUNNER = path.join(ROOT, 'crewai', 'marketing_team.py');
-const MAX_BODY_BYTES = 1_000_000;
-const MAX_TEAM_RUNS = 30;
-const TEAM_RUN_TIMEOUT_MS = 900_000;
 
 function loadLocalEnvironment() {
   try {
@@ -30,7 +21,61 @@ function loadLocalEnvironment() {
 }
 
 loadLocalEnvironment();
+const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
+const PORT = Number(process.env.PORT || 8000);
+const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(ROOT, 'data'));
+const DATABASE = path.join(DATA_DIR, 'timeline.json');
+const TEAM_DATABASE = path.join(DATA_DIR, 'team-runs.json');
+const TEAM_AGENTS_DATABASE = path.join(DATA_DIR, 'team-agents.json');
+const CREW_RUNNER = path.join(ROOT, 'crewai', 'marketing_team.py');
+const MAX_BODY_BYTES = 1_000_000;
+const MAX_TEAM_RUNS = 30;
+const TEAM_RUN_TIMEOUT_MS = 900_000;
+const BASIC_AUTH_USER = process.env.APP_BASIC_AUTH_USER || '';
+const BASIC_AUTH_PASSWORD = process.env.APP_BASIC_AUTH_PASSWORD || '';
 const CREW_PYTHON = process.env.CREWAI_PYTHON || path.join(ROOT, '.crew-env', 'bin', 'python');
+
+async function initializeDataDirectory() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  for (const filename of ['timeline.json', 'team-runs.json', 'team-agents.json']) {
+    const target = path.join(DATA_DIR, filename);
+    try {
+      await fs.copyFile(path.join(ROOT, 'data', filename), target, fsSync.constants.COPYFILE_EXCL);
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+  }
+}
+
+function secureStringEqual(actual, expected) {
+  const actualHash = createHash('sha256').update(actual).digest();
+  const expectedHash = createHash('sha256').update(expected).digest();
+  return timingSafeEqual(actualHash, expectedHash) && actual === expected;
+}
+
+function isAuthorized(request) {
+  if (!BASIC_AUTH_USER && !BASIC_AUTH_PASSWORD) return process.env.NODE_ENV !== 'production';
+  if (!BASIC_AUTH_USER || !BASIC_AUTH_PASSWORD) return false;
+  const match = request.headers.authorization?.match(/^Basic\s+([A-Za-z0-9+/=]+)$/i);
+  if (!match) return false;
+  const credentials = Buffer.from(match[1], 'base64').toString('utf8');
+  const separator = credentials.indexOf(':');
+  if (separator < 0) return false;
+  return secureStringEqual(credentials.slice(0, separator), BASIC_AUTH_USER)
+    && secureStringEqual(credentials.slice(separator + 1), BASIC_AUTH_PASSWORD);
+}
+
+function hasSameOrigin(request) {
+  const fetchSite = request.headers['sec-fetch-site'];
+  if (fetchSite === 'cross-site') return false;
+  const origin = request.headers.origin;
+  if (!origin) return true;
+  try {
+    return new URL(origin).host === request.headers.host;
+  } catch {
+    return false;
+  }
+}
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -319,6 +364,28 @@ async function serveStatic(pathname, response) {
 
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${HOST}:${PORT}`);
+  if (url.pathname === '/health' && request.method === 'GET') {
+    response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' });
+    response.end('ok');
+    return;
+  }
+
+  if (!isAuthorized(request)) {
+    response.writeHead(401, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'WWW-Authenticate': 'Basic realm="Libra Marketing Workspace", charset="UTF-8"',
+      'X-Content-Type-Options': 'nosniff'
+    });
+    response.end('Authentication required.');
+    return;
+  }
+
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method) && !hasSameOrigin(request)) {
+    sendJson(response, 403, { error: 'Cross-origin requests are not allowed.' });
+    return;
+  }
+
   if (url.pathname === '/api/team/status') {
     if (request.method !== 'GET') {
       response.setHeader('Allow', 'GET');
@@ -532,8 +599,18 @@ const server = http.createServer(async (request, response) => {
   await serveStatic(decodeURIComponent(url.pathname), response);
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`Timeline app running at http://${HOST}:${PORT}`);
-  console.log(`Editor: http://${HOST}:${PORT}/admin.html`);
-  console.log('This local editor has no sign-in; the server is bound to localhost only.');
-});
+if (process.env.NODE_ENV === 'production' && (!BASIC_AUTH_USER || !BASIC_AUTH_PASSWORD)) {
+  console.error('Refusing to start in production without APP_BASIC_AUTH_USER and APP_BASIC_AUTH_PASSWORD.');
+  process.exitCode = 1;
+} else {
+  initializeDataDirectory().then(() => {
+    server.listen(PORT, HOST, () => {
+      console.log(`Timeline app running on ${HOST}:${PORT}`);
+      console.log(`Persistent data directory: ${DATA_DIR}`);
+      if (BASIC_AUTH_USER && BASIC_AUTH_PASSWORD) console.log('HTTP Basic authentication is enabled.');
+    });
+  }).catch((error) => {
+    console.error(`Could not initialize data directory ${DATA_DIR}: ${error.message}`);
+    process.exitCode = 1;
+  });
+}
