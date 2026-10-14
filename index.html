@@ -12,15 +12,22 @@
   <body>
     <main class="blank-canvas" aria-label="Launches, campaigns, and events timeline for the year">
       <div class="brand-title">Libra <span aria-hidden="true">×</span> WK LR Benelux</div>
-      <nav class="timeline-actions" aria-label="Marketing workspaces">
+      <nav class="timeline-actions" aria-label="Timeline controls and workspaces">
         <div class="timeline-zoom" role="group" aria-label="Timeline zoom controls">
           <button class="zoom-button" id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>
           <span class="zoom-level" id="zoom-level" aria-live="polite">100%</span>
           <button class="zoom-button" id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
           <button class="zoom-reset" id="zoom-reset" type="button">Reset</button>
         </div>
-        <a class="manage-link" href="/admin.html">Manage timeline</a>
-        <a class="manage-link team-link" href="/team.html">Marketing team <span aria-hidden="true">↗</span></a>
+        <details class="workspace-menu">
+          <summary aria-label="Open workspace menu" title="Workspaces">
+            <span class="workspace-menu-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="workspace-menu-popover">
+            <a href="/admin.html">Manage timeline</a>
+            <a href="/team.html">Marketing team <span aria-hidden="true">↗</span></a>
+          </div>
+        </details>
       </nav>
       <p class="timeline-load-error" id="timeline-load-error" role="alert" hidden></p>
       <h1 class="timeline-title launches-title">Launches</h1>
