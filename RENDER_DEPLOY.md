@@ -10,10 +10,10 @@ Push the project, including `Dockerfile`, `.dockerignore`, `render.yaml`, and th
 
 1. In Render, choose **New → Blueprint** and connect `MGR001/marketing`.
 2. Select the `main` branch and apply the Blueprint from `render.yaml`.
-3. Choose/retain the **Starter** plan or higher. A persistent disk is included in this configuration; Render does not provide persistent disks on its free web-service plan.
+3. Choose/retain the **1 CPU / 2 GB** plan (Render plan ID `1c-2g`) or another paid plan. A persistent disk is included in this configuration; Render persistent disks require a paid web-service plan.
 4. During setup, enter `APP_BASIC_AUTH_USER`, a long unique `APP_BASIC_AUTH_PASSWORD`, and `OPENAI_API_KEY` when prompted for unsynced environment variables. Keep these values private. `OPENAI_MODEL` defaults to `openai/gpt-4o-mini`.
 
-The Blueprint builds Node.js and the CrewAI Python environment into one Docker image, listens on Render's assigned port, protects the app with HTTP Basic Authentication, and mounts a 1 GB persistent disk at `/var/data` for the timeline, agent profiles, and saved runs. On the first deploy, the app seeds missing files on the disk from the included `data/` defaults; later deploys preserve the disk's contents.
+The Blueprint builds Node.js and the CrewAI Python environment into one Docker image, listens on Render's assigned port, protects the app with HTTP Basic Authentication, and mounts a 1 GB persistent disk at `/var/data` for the timeline, agent profiles, and saved runs. On the first deploy, the app seeds missing files on the disk from the included `data/` defaults; later deploys preserve the disk's contents. Render takes the service offline briefly during redeploys when a persistent disk is attached.
 
 ## 3. Open the service
 

@@ -2,7 +2,7 @@ services:
   - type: web
     name: libra-marketing
     runtime: docker
-    plan: starter
+    plan: 1c-2g
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health
