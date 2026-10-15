@@ -140,7 +140,7 @@ function validateTimeline(data) {
   }
 
   for (const launch of data.launches) {
-    if (!isIsoDate(launch.date, data.year) || !isText(launch.subtitle, 180)) return 'Check each launch date and short description.';
+    if ((!isIsoDate(launch.date, data.year) && !isIsoDate(launch.date, data.year + 1)) || !isText(launch.subtitle, 180)) return 'Check each launch date and short description.';
     if (!Array.isArray(launch.activities) || launch.activities.length > 20 || launch.activities.some((activity) => !isText(activity, 180))) {
       return 'Launch activities must be a list of up to 20 non-empty items.';
     }

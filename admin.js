@@ -53,7 +53,7 @@ function syncFields() {
   document.querySelector('#entry-start').required = isCampaign;
   document.querySelector('#entry-end').required = isCampaign;
   document.querySelector('#entry-subtitle').required = !isCampaign;
-  document.querySelector('#entry-date').max = `${timelineData?.year || 2026}-12-31`;
+  document.querySelector('#entry-date').max = `${(timelineData?.year || 2026) + (isLaunch ? 1 : 0)}-12-31`;
   document.querySelector('#entry-date').min = `${timelineData?.year || 2026}-01-01`;
   for (const selector of ['#entry-start', '#entry-end']) {
     document.querySelector(selector).min = `${timelineData?.year || 2026}-01-01`;

@@ -24,99 +24,131 @@
   ],
   "launches": [
     {
-      "id": "launch-libra-public",
-      "title": "Libra Public",
-      "date": "2026-09-22",
-      "subtitle": "Product launch",
-      "description": "Launch scheduled for September 22, 2026.",
-      "activities": []
-    },
-    {
-      "id": "launch-libra-monkey-be-1b",
-      "title": "Libra x Monkey BE v1",
-      "description": "Launch scheduled for May 12, 2026.",
+      "id": "launch-libra-monkey-be-toggle",
+      "title": "Libra x Monkey BE (Toggle)",
       "date": "2026-05-12",
-      "subtitle": "Product launch",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 12-05-2026.",
       "activities": []
     },
     {
-      "id": "launch-entitlement-based-libra-nl-libra-x-legal-intelligence",
-      "title": "Entitlement Based Libra NL",
-      "description": "Launch scheduled for July 14, 2026.",
-      "date": "2026-07-14",
-      "subtitle": "Product launch",
+      "id": "launch-libra-ivl-be-toggle",
+      "title": "Libra X IVL BE (Toggle)",
+      "date": "2026-06-08",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 08-06-2026.",
       "activities": []
     },
     {
       "id": "launch-entitlement-based-libra-be",
       "title": "Entitlement Based Libra BE",
-      "description": "Launch scheduled for July 14, 2026.",
       "date": "2026-07-14",
-      "subtitle": "Product launch",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 14-07-2026.",
       "activities": []
     },
     {
-      "id": "5cb85780-a1ae-4213-8260-20dc53b224f9",
-      "title": "Libra X Legal Inteliigence",
-      "description": "Launch scheduled for July 14, 2026.",
+      "id": "launch-entitlement-based-libra-nl",
+      "title": "Entitlement Based Libra NL",
       "date": "2026-07-14",
-      "subtitle": "Libra X Legal Inteliigence",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 14-07-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-legal-intelligence-third-party",
+      "title": "Libra X Legal Intelligence Third Party",
+      "date": "2026-07-14",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 14-07-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-ivl-be-addin-v2",
+      "title": "Libra X IVL BE (Add-In v2)",
+      "date": "2026-07-31",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 31-07-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-legal-intelligence-addin-v2",
+      "title": "Libra X Legal Intelligence (Add-In v2)",
+      "date": "2026-08-31",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 31-08-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-public",
+      "title": "Libra Public",
+      "date": "2026-09-22",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 22-09-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-monkey-addin-v2",
+      "title": "Libra X MonKEY (Add-In v2)",
+      "date": "2026-09-24",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 24-09-2026.",
       "activities": []
     },
     {
       "id": "launch-migratie-aid-libra",
-      "title": "Migratie AID - Libra Kick-Off BE+NL",
-      "description": "Launch scheduled for September 24, 2026.",
+      "title": "Migratie AID - Libra",
       "date": "2026-09-24",
-      "subtitle": "Product launch",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 24-09-2026.",
       "activities": []
     },
     {
-      "id": "launch-libra-addin-v2-be-monkey",
-      "title": "Libra X MonKey Add-In v2 BE",
-      "description": "Launch scheduled for September 24, 2026.",
-      "date": "2026-09-24",
-      "subtitle": "Product launch",
-      "activities": []
-    },
-    {
-      "id": "launch-libra-addin-v2-nl-li",
-      "title": "Libra X LI Add-In NL",
-      "description": "Launch scheduled for August 31, 2026.",
-      "date": "2026-08-31",
-      "subtitle": "Product launch",
-      "activities": []
-    },
-    {
-      "id": "launch-libra-x-socialeye",
-      "title": "Libra x SocialEye Add in + Toggle BE",
-      "description": "Launch scheduled for October 13, 2026.",
-      "date": "2026-10-20",
-      "subtitle": "Product launch",
-      "activities": []
-    },
-    {
-      "id": "launch-libra-x-be-full-launch",
-      "title": "Libra X IVL BE Toggle",
-      "description": "Launch scheduled for June 8, 2026.",
-      "date": "2026-06-08",
-      "subtitle": "Product launch",
-      "activities": []
-    },
-    {
-      "id": "launch-libra-addin-v2-nl-inview-legal",
-      "title": "Libra X IVL NL Add-In",
-      "description": "Launch scheduled for October 15, 2026.",
+      "id": "launch-libra-ivl-nl-addin-v2",
+      "title": "Libra X IVL NL (Add-In v2)",
       "date": "2026-10-15",
-      "subtitle": "Product launch",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 15-10-2026.",
       "activities": []
     },
     {
-      "id": "launch-libra-addin-v2-be-inview-legal",
-      "title": "Libra X IVL Add-In BE",
-      "description": "Launch scheduled for July 31, 2026.",
-      "date": "2026-07-31",
-      "subtitle": "Product launch",
+      "id": "launch-libra-socialeye-toggle-addin-v2",
+      "title": "Libra x SocialEye (Toggle + Add-In v2)",
+      "date": "2026-10-20",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 20-10-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-ivt-nl-addin-v2",
+      "title": "Libra X IVT NL (Add-In v2)",
+      "date": "2026-10-21",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 21-10-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-drafting-uitbreiding-wk-model-ivl-nl",
+      "title": "Feature: Drafting uitbreiding WK model IVL NL",
+      "date": "2026-10-30",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 30-10-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-bredere-propositie",
+      "title": "Libra bredere propositie (opening up platform) (prognose only)",
+      "date": "2026-11-20",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 20-11-2026.",
+      "activities": []
+    },
+    {
+      "id": "launch-libra-tax-2027",
+      "title": "Libra Tax 2027",
+      "date": "2027-01-01",
+      "subtitle": "Market Ready (live)",
+      "description": "Market Ready (live): 01-01-2027.",
       "activities": []
     }
   ],
