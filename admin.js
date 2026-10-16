@@ -273,6 +273,32 @@ document.querySelector('#always-on-form').addEventListener('submit', async (even
   }
 });
 
+document.querySelector('#export-excel').addEventListener('click', async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    const response = await fetch('/api/timeline/export.xlsx', { cache: 'no-store' });
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || 'The Excel workbook could not be downloaded.');
+    }
+    const workbook = await response.blob();
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(workbook);
+    link.href = url;
+    link.download = response.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1] || `libra-marketing-timeline-${timelineData.year}.xlsx`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setStatus('Excel workbook downloaded.');
+  } catch (error) {
+    setStatus(error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+});
+
 async function loadData() {
   try {
     const response = await fetch('/api/timeline', { cache: 'no-store' });

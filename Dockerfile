@@ -17,8 +17,8 @@ COPY requirements-crewai.txt ./
 RUN /opt/crew-env/bin/pip install --no-cache-dir --upgrade pip \
     && /opt/crew-env/bin/pip install --no-cache-dir -r requirements-crewai.txt
 
-COPY package.json ./
-RUN npm install --omit=dev --no-audit --no-fund
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --no-audit --no-fund
 
 COPY . .
 

@@ -59,7 +59,7 @@ textarea { font: inherit; }
 
 .admin-brand i { margin: 0 7px; color: var(--sage); font-style: normal; }
 
-.admin-topbar-actions { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 12px; }
+.admin-topbar-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; color: var(--muted); font-size: 12px; }
 
 .admin-shell { max-width: 1600px; margin: 0 auto; padding: 38px 4vw 56px; }
 
@@ -179,5 +179,11 @@ textarea { font: inherit; }
 .admin-status { position: sticky; z-index: 4; top: 14px; margin: 0 0 16px; padding: 12px 15px; border: 1px solid rgba(168, 196, 170, 0.25); border-radius: 10px; background: rgba(30, 48, 34, 0.96); color: #e7f1e4; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); }
 .admin-status.error { border-color: rgba(225, 171, 146, 0.32); background: rgba(52, 33, 27, 0.96); color: #ffe4d7; }
 .admin-footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 22px; color: rgba(221, 232, 220, 0.4); font-size: 10px; }
+
+@media (max-width: 760px) {
+  .admin-topbar { flex-wrap: wrap; gap: 12px; }
+  .admin-topbar-actions { width: 100%; }
+  .admin-topbar-actions > span { margin-right: auto; }
+}
 
 [hidden] { display: none !important; }

@@ -77,27 +77,96 @@ updateZoomControls();
 
 function keepLaunchLabelsInView() {
   const scrollRect = yearScroll.getBoundingClientRect();
-  const laneEnds = [];
+  const lineRect = document.querySelector('.timeline-launches .timeline-line').getBoundingClientRect();
+  const monthRect = document.querySelector('.timeline-launches .month-labels').getBoundingClientRect();
+  const columns = yearScroll.clientWidth < 420 ? 3 : yearScroll.clientWidth < 900 ? 4 : 6;
+  const labelWidth = Math.min(200, Math.max(82, (yearScroll.clientWidth - 24) / columns - 8));
+  const visibleMoments = [];
+
   document.querySelectorAll('.launch-moment').forEach((moment) => {
     const copy = moment.querySelector('.moment-copy');
-    const momentLeft = moment.getBoundingClientRect().left - scrollRect.left;
-    const markerX = momentLeft + moment.offsetWidth / 2;
-    const copyWidth = copy.getBoundingClientRect().width;
-    if (markerX < 0 || markerX > yearScroll.clientWidth) {
-      copy.style.left = '50%';
+    const momentRect = moment.getBoundingClientRect();
+    const momentLeft = momentRect.left - scrollRect.left;
+    const markerX = momentLeft + momentRect.width / 2;
+    copy.style.left = '50%';
+    const edgeWidth = 2 * Math.min(markerX - 8, yearScroll.clientWidth - 8 - markerX);
+    const momentLabelWidth = Math.min(labelWidth, edgeWidth);
+    copy.style.width = `${momentLabelWidth}px`;
+    const stem = moment.querySelector('.moment-stem');
+    if (momentLabelWidth < 64) {
       copy.style.visibility = 'hidden';
-      moment.style.setProperty('--launch-lane', moment.dataset.baseLane);
+      stem.style.visibility = 'hidden';
+      moment.classList.remove('label-below');
       return;
     }
     copy.style.visibility = 'visible';
-    const minimumLeft = 8;
-    const maximumLeft = Math.max(minimumLeft, yearScroll.clientWidth - copyWidth - 8);
-    const desiredLeft = Math.min(maximumLeft, Math.max(minimumLeft, markerX - copyWidth / 2));
-    let lane = laneEnds.findIndex((end) => end <= desiredLeft);
-    if (lane === -1) lane = laneEnds.length;
-    laneEnds[lane] = desiredLeft + copyWidth + 16;
-    moment.style.setProperty('--launch-lane', lane);
-    copy.style.left = `${desiredLeft - momentLeft + copyWidth / 2}px`;
+    stem.style.visibility = 'visible';
+    visibleMoments.push({ moment, copy, markerX, width: copy.getBoundingClientRect().width, height: copy.getBoundingClientRect().height });
+  });
+
+  if (!visibleMoments.length) return;
+
+  const lineY = lineRect.top - scrollRect.top + lineRect.height / 2;
+  const monthY = monthRect.top - scrollRect.top;
+  const rowHeight = Math.max(...visibleMoments.map(({ height }) => height));
+  const rowStep = rowHeight + 8;
+  const headerBottom = Math.max(
+    document.querySelector('.brand-title').getBoundingClientRect().bottom,
+    document.querySelector('.timeline-actions').getBoundingClientRect().bottom
+  );
+  const topPadding = Math.max(8, headerBottom - scrollRect.top + 8);
+  const labelGap = 12;
+  const rows = [];
+  const upperSpace = lineY - labelGap - rowHeight - topPadding;
+  const lowerSpace = monthY - 8 - lineY - labelGap - rowHeight;
+  const upperRowCount = upperSpace < 0 ? 0 : Math.floor(upperSpace / rowStep) + 1;
+  const lowerRowCount = lowerSpace < 0 ? 0 : Math.floor(lowerSpace / rowStep) + 1;
+
+  for (let lane = 0; lane < upperRowCount; lane += 1) {
+    rows.push({ top: lineY - labelGap - rowHeight - lane * rowStep, below: false, intervals: [] });
+  }
+  for (let lane = 0; lane < lowerRowCount; lane += 1) {
+    rows.push({ top: lineY + labelGap + lane * rowStep, below: true, intervals: [] });
+  }
+
+  const orderedRows = [...rows].sort((first, second) => {
+    const firstLane = Math.round(Math.abs(lineY - (first.below ? first.top : first.top + rowHeight)) / rowStep);
+    const secondLane = Math.round(Math.abs(lineY - (second.below ? second.top : second.top + rowHeight)) / rowStep);
+    return firstLane - secondLane || Number(first.below) - Number(second.below);
+  });
+
+  visibleMoments.forEach(({ moment, copy, markerX, width, height }) => {
+    const labelLeft = markerX - width / 2;
+    let placement = null;
+    for (const row of orderedRows) {
+      if (row.intervals.every(([start, end]) => labelLeft + width + 8 <= start || labelLeft >= end + 8)) {
+        placement = { row, labelLeft };
+        break;
+      }
+    }
+
+    if (!placement) {
+      copy.style.visibility = 'hidden';
+      moment.querySelector('.moment-stem').style.visibility = 'hidden';
+      return;
+    }
+
+    const { row, labelLeft: placedLeft } = placement;
+    row.intervals.push([placedLeft, placedLeft + width]);
+    moment.classList.toggle('label-below', row.below);
+    copy.style.top = `${row.top - (moment.getBoundingClientRect().top - scrollRect.top)}px`;
+    copy.style.bottom = 'auto';
+    copy.style.visibility = 'visible';
+    const stem = moment.querySelector('.moment-stem');
+    if (row.below) {
+      stem.style.top = '27px';
+      stem.style.bottom = 'auto';
+      stem.style.height = `${Math.max(22, row.top - lineY - 10)}px`;
+    } else {
+      stem.style.top = 'auto';
+      stem.style.bottom = '27px';
+      stem.style.height = `${Math.max(22, lineY - row.top - height - 10)}px`;
+    }
   });
 }
 

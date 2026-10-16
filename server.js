@@ -4,6 +4,7 @@ const fsSync = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { createHash, randomBytes, randomUUID, timingSafeEqual } = require('node:crypto');
+const ExcelJS = require('exceljs');
 
 const ROOT = __dirname;
 
@@ -134,6 +135,25 @@ function sendJson(response, statusCode, payload) {
     'X-Content-Type-Options': 'nosniff'
   });
   response.end(JSON.stringify(payload));
+}
+
+function addExportWorksheet(workbook, name, columns, rows) {
+  const worksheet = workbook.addWorksheet(name);
+  worksheet.columns = columns;
+  worksheet.addRows(rows);
+  worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+  worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF19352B' } };
+  worksheet.getRow(1).height = 24;
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber > 1) row.alignment = { vertical: 'top', wrapText: true };
+  });
+  if (rows.length) worksheet.autoFilter = { from: 'A1', to: `${String.fromCharCode(64 + columns.length)}1` };
+  return worksheet;
+}
+
+function excelDate(value) {
+  return value ? new Date(`${value}T00:00:00.000Z`) : null;
 }
 
 function isText(value, maxLength = 2000) {
@@ -665,6 +685,70 @@ const server = http.createServer(async (request, response) => {
       } else {
         sendJson(response, 502, { error: error.message || 'The marketing team could not complete this run.' });
       }
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/timeline/export.xlsx') {
+    if (request.method !== 'GET') {
+      response.setHeader('Allow', 'GET');
+      sendJson(response, 405, { error: 'Method not allowed.' });
+      return;
+    }
+    try {
+      const data = await readTimeline();
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Libra Marketing Timeline';
+      workbook.created = new Date();
+
+      const dateColumn = { numFmt: 'dd mmm yyyy' };
+      addExportWorksheet(workbook, 'Launches', [
+        { header: 'Launch date', key: 'date', width: 16, style: dateColumn },
+        { header: 'Launch', key: 'title', width: 42 },
+        { header: 'Short label', key: 'subtitle', width: 32 },
+        { header: 'Description', key: 'description', width: 60 },
+        { header: 'Marketing activities', key: 'activities', width: 48 },
+        { header: 'ID', key: 'id', width: 38 }
+      ], data.launches.map((launch) => ({ ...launch, date: excelDate(launch.date), activities: (launch.activities || []).join('\n') })));
+      addExportWorksheet(workbook, 'Campaigns', [
+        { header: 'Lane', key: 'lane', width: 18 },
+        { header: 'Campaign', key: 'title', width: 42 },
+        { header: 'Start date', key: 'start', width: 16, style: dateColumn },
+        { header: 'End date', key: 'end', width: 16, style: dateColumn },
+        { header: 'Description', key: 'description', width: 60 },
+        { header: 'ID', key: 'id', width: 38 }
+      ], data.campaigns.map((campaign) => ({ ...campaign, start: excelDate(campaign.start), end: excelDate(campaign.end) })));
+      addExportWorksheet(workbook, 'Events', [
+        { header: 'Event date', key: 'date', width: 16, style: dateColumn },
+        { header: 'Event', key: 'title', width: 42 },
+        { header: 'Short label', key: 'subtitle', width: 32 },
+        { header: 'Description', key: 'description', width: 60 },
+        { header: 'ID', key: 'id', width: 38 }
+      ], data.events.map((event) => ({ ...event, date: excelDate(event.date) })));
+      addExportWorksheet(workbook, 'Campaign themes', [
+        { header: 'Period', key: 'period', width: 28 },
+        { header: 'Theme', key: 'name', width: 48 },
+        { header: 'ID', key: 'id', width: 38 }
+      ], data.themes);
+      addExportWorksheet(workbook, 'Always On', [
+        { header: 'Activity', key: 'title', width: 42 },
+        { header: 'Start date', key: 'start', width: 16, style: dateColumn },
+        { header: 'End date', key: 'end', width: 16, style: dateColumn },
+        { header: 'Description', key: 'description', width: 60 },
+        { header: 'ID', key: 'id', width: 38 }
+      ], [{ ...data.alwaysOn, start: excelDate(data.alwaysOn.start), end: excelDate(data.alwaysOn.end) }]);
+
+      const file = await workbook.xlsx.writeBuffer();
+      response.writeHead(200, {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="libra-marketing-timeline-${data.year}.xlsx"`,
+        'Cache-Control': 'private, no-store',
+        'X-Content-Type-Options': 'nosniff'
+      });
+      response.end(file);
+    } catch (error) {
+      console.error('Unable to export timeline workbook:', error);
+      sendJson(response, 500, { error: 'The timeline workbook could not be created.' });
     }
     return;
   }
