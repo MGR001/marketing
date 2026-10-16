@@ -11,6 +11,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .team-topbar nav { display:flex; gap:8px; }
 .team-topbar nav a { padding:9px 12px; border:1px solid transparent; border-radius:9px; color:#d1dbd0; text-decoration:none; font-size:12px; }
 .team-topbar nav a:hover { border-color:var(--line); background:rgba(255,255,255,.04); }
+.team-topbar nav .auth-logout { padding:9px 12px; border:1px solid transparent; border-radius:9px; background:transparent; color:#aab7a9; font-size:11px; cursor:pointer; }
+.team-topbar nav .auth-logout:hover { border-color:var(--line); background:rgba(255,255,255,.04); color:#eff3eb; }
 .team-shell { width:min(1280px,calc(100% - 48px)); margin:0 auto; padding:54px 0 44px; }
 .team-intro { display:flex; justify-content:space-between; gap:32px; align-items:flex-end; margin-bottom:28px; }
 .eyebrow { margin:0 0 9px; color:#93a893; font:500 10px/1.2 "DM Mono",monospace; letter-spacing:.14em; }

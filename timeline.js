@@ -1,4 +1,5 @@
 const yearScroll = document.querySelector('#year-scroll');
+const timelineScrollbar = document.querySelector('#timeline-scrollbar');
 const detailDialog = document.querySelector('#timeline-detail-dialog');
 const detailType = document.querySelector('#detail-type');
 const detailTitle = document.querySelector('#detail-title');
@@ -14,18 +15,25 @@ const zoomResetButton = document.querySelector('#zoom-reset');
 const MIN_ZOOM = 0.75;
 const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.25;
+const TIMELINE_MONTHS = 15;
 let zoomLevel = 1;
 let timelineData = null;
 yearScroll.scrollLeft = 0;
 
 function baseStageWidth() {
-  return Math.max(window.innerWidth * 1.6, 2200);
+  const comparableYearWidth = Math.max(window.innerWidth * 1.6, 1450);
+  return 250 + (comparableYearWidth - 250) * TIMELINE_MONTHS / 12;
 }
 
 function updateZoomControls() {
   zoomLevelLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
   zoomOutButton.disabled = zoomLevel <= MIN_ZOOM;
   zoomInButton.disabled = zoomLevel >= MAX_ZOOM;
+}
+
+function syncTimelineScrollbar() {
+  timelineScrollbar.max = String(Math.max(0, Math.round(yearScroll.scrollWidth - yearScroll.clientWidth)));
+  timelineScrollbar.value = String(Math.max(0, Math.min(Number(timelineScrollbar.max), Math.round(yearScroll.scrollLeft))));
 }
 
 function renderTimelineItems() {
@@ -57,6 +65,7 @@ function setZoom(nextZoom, preserveCenter = true) {
     const nextScrollLeft = 250 + centerFraction * newAxisWidth - yearScroll.clientWidth / 2;
     yearScroll.style.scrollBehavior = 'auto';
     yearScroll.scrollLeft = Math.max(0, Math.min(yearScroll.scrollWidth - yearScroll.clientWidth, nextScrollLeft));
+    syncTimelineScrollbar();
     requestAnimationFrame(() => yearScroll.style.removeProperty('scroll-behavior'));
   }
 }
@@ -93,6 +102,10 @@ function keepLaunchLabelsInView() {
 }
 
 yearScroll.addEventListener('scroll', keepLaunchLabelsInView, { passive: true });
+yearScroll.addEventListener('scroll', syncTimelineScrollbar, { passive: true });
+timelineScrollbar.addEventListener('input', () => {
+  yearScroll.scrollLeft = Number(timelineScrollbar.value);
+});
 
 yearScroll.addEventListener('wheel', (event) => {
   if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
@@ -112,7 +125,7 @@ detailDialog.addEventListener('click', (event) => {
 });
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const zoneClasses = ['spring-zone', 'summer-zone', 'autumn-zone', 'winter-zone'];
+const zoneClasses = ['spring-zone', 'summer-zone', 'autumn-zone', 'winter-zone', 'new-year-zone'];
 
 function parseDate(value) {
   return new Date(`${value}T12:00:00`);
@@ -122,7 +135,7 @@ function dateFraction(value, year, includeEndDay = false) {
   const date = new Date(`${value}T00:00:00.000Z`);
   if (includeEndDay) date.setUTCDate(date.getUTCDate() + 1);
   const yearStart = Date.UTC(year, 0, 1);
-  const yearEnd = Date.UTC(year + 1, 0, 1);
+  const yearEnd = Date.UTC(year + 1, 3, 1);
   return Math.max(0, Math.min(1, (date.getTime() - yearStart) / (yearEnd - yearStart)));
 }
 
@@ -305,6 +318,7 @@ function renderTimeline(data) {
   const initialScroll = Math.max(0, Math.min(yearScroll.scrollWidth - yearScroll.clientWidth, currentPosition - yearScroll.clientWidth * 0.5));
   yearScroll.style.scrollBehavior = 'auto';
   yearScroll.scrollLeft = initialScroll;
+  syncTimelineScrollbar();
   requestAnimationFrame(() => yearScroll.style.removeProperty('scroll-behavior'));
 }
 

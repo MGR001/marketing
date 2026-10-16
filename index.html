@@ -26,6 +26,7 @@
           <div class="workspace-menu-popover">
             <a href="/admin.html">Manage timeline</a>
             <a href="/team.html">Marketing team <span aria-hidden="true">↗</span></a>
+            <button class="workspace-logout" type="button" data-auth-logout>Sign out</button>
           </div>
         </details>
       </nav>
@@ -38,11 +39,11 @@
           <section class="timeline timeline-launches" aria-label="Product launches">
             <div class="timeline-line" aria-hidden="true"></div>
             <div class="launch-items" id="launch-items" aria-live="polite"></div>
-            <div class="month-labels" aria-label="Months"><span>January</span><span>February</span><span>March</span><span>April</span><span>May</span><span>June</span><span>July</span><span>August</span><span>September</span><span>October</span><span>November</span><span>December</span></div>
+            <div class="month-labels" aria-label="Months, January 2026 through March 2027"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan ’27</span><span>Feb</span><span>Mar</span></div>
           </section>
           <section class="timeline timeline-campaigns" aria-label="Campaign timeline">
             <div class="campaign-zones" id="campaign-zones" aria-label="Campaign themes by season"></div>
-            <svg class="campaign-flow" viewBox="0 0 250 1000" preserveAspectRatio="none" aria-hidden="true"><path class="flow-middle" d="M 0 520 C 40 520 55 520 145 520" /><path class="flow-branding" d="M 0 520 C 40 520 55 520 72 520 C 112 520 105 420 145 420" /><path class="flow-always-on" d="M 0 520 C 40 520 55 520 72 520 C 112 520 105 620 145 620" /></svg>
+            <svg class="campaign-flow" viewBox="0 0 250 1000" preserveAspectRatio="none" aria-hidden="true"><path class="flow-middle" d="M 0 620 C 40 620 55 620 145 620" /><path class="flow-branding" d="M 0 620 C 40 620 55 620 72 620 C 112 620 105 520 145 520" /><path class="flow-always-on" d="M 0 620 C 40 620 55 620 72 620 C 112 620 105 720 145 720" /></svg>
             <div class="campaign-lane branding-lane" aria-label="Branding campaign lane">
               <span class="campaign-lane-label">Branding</span>
               <div class="timeline-line" aria-hidden="true"></div>
@@ -58,14 +59,17 @@
               <div class="timeline-line" aria-hidden="true"></div>
               <div class="campaign-runway" id="always-on-campaign"></div>
             </div>
-            <div class="month-labels" aria-label="Months"><span>January</span><span>February</span><span>March</span><span>April</span><span>May</span><span>June</span><span>July</span><span>August</span><span>September</span><span>October</span><span>November</span><span>December</span></div>
+            <div class="month-labels" aria-label="Months, January 2026 through March 2027"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan ’27</span><span>Feb</span><span>Mar</span></div>
           </section>
           <section class="timeline timeline-events" aria-label="Events timeline">
             <div class="timeline-line" aria-hidden="true"></div>
             <div class="event-runway" id="event-markers" aria-label="Events"></div>
-            <div class="month-labels" aria-label="Months"><span>January</span><span>February</span><span>March</span><span>April</span><span>May</span><span>June</span><span>July</span><span>August</span><span>September</span><span>October</span><span>November</span><span>December</span></div>
+            <div class="month-labels" aria-label="Months, January 2026 through March 2027"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan ’27</span><span>Feb</span><span>Mar</span></div>
           </section>
         </div>
+      </div>
+      <div class="timeline-scroll-control" aria-label="Timeline scroll control">
+        <input id="timeline-scrollbar" type="range" min="0" max="0" value="0" step="1" aria-label="Scroll timeline horizontally" />
       </div>
     </main>
     <dialog class="detail-dialog" id="timeline-detail-dialog" aria-labelledby="detail-title" aria-describedby="detail-description">
@@ -81,6 +85,7 @@
         </section>
       </div>
     </dialog>
+    <script src="auth.js"></script>
     <script src="timeline.js"></script>
   </body>
 </html>

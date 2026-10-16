@@ -1026,6 +1026,24 @@ body { background: #101613; }
   transition: background 180ms ease, border-color 180ms ease;
 }
 
+.workspace-logout {
+  min-height: 38px;
+  margin-top: 3px;
+  padding: 0 11px;
+  border: 0;
+  border-top: 1px solid rgba(237, 244, 237, 0.1);
+  border-radius: 0 0 8px 8px;
+  background: transparent;
+  color: rgba(214, 225, 214, 0.66);
+  font: 500 11px/1.2 "DM Sans", sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.workspace-logout:hover,
+.workspace-logout:focus-visible { background: rgba(42, 57, 46, 0.56); color: rgba(248, 250, 247, 0.9); }
+.workspace-logout:focus-visible { outline: 2px solid #a8c2ab; outline-offset: 2px; }
+
 .workspace-menu-popover a:hover,
 .workspace-menu-popover a:focus-visible {
   border-color: rgba(184, 212, 186, 0.2);
@@ -1245,4 +1263,73 @@ body { background: #101613; }
   .zoom-reset { min-width: 40px; height: 28px; }
   .zoom-level { min-width: 36px; }
   .workspace-menu summary { width: 40px; height: 40px; }
+}
+
+/* Responsive 15-month view: 2026 plus Q1 2027. */
+.year-scroll {
+  inset: 0 3vw 25px 20vw;
+  scrollbar-color: rgba(185, 210, 179, 0.68) rgba(217, 231, 225, 0.1);
+  scrollbar-width: none;
+}
+
+.year-scroll::-webkit-scrollbar { display: none; }
+.timeline-scroll-control { position:absolute; z-index:5; right:3vw; bottom:3px; left:20vw; display:flex; height:20px; align-items:center; }
+.timeline-scroll-control input { width:100%; height:32px; margin:0; appearance:none; background:transparent; cursor:ew-resize; touch-action:pan-y; }
+.timeline-scroll-control input::-webkit-slider-runnable-track { height:6px; border:1px solid rgba(217,231,225,.18); border-radius:9px; background:rgba(217,231,225,.1); }
+.timeline-scroll-control input::-webkit-slider-thumb { width:38px; height:16px; margin-top:-6px; appearance:none; border:1px solid rgba(225,241,220,.72); border-radius:9px; background:linear-gradient(180deg,#bfd6b9,#8fae90); box-shadow:0 2px 10px rgba(0,0,0,.3); }
+.timeline-scroll-control input::-moz-range-track { height:6px; border:1px solid rgba(217,231,225,.18); border-radius:9px; background:rgba(217,231,225,.1); }
+.timeline-scroll-control input::-moz-range-thumb { width:38px; height:16px; border:1px solid rgba(225,241,220,.72); border-radius:9px; background:linear-gradient(180deg,#bfd6b9,#8fae90); box-shadow:0 2px 10px rgba(0,0,0,.3); }
+.timeline-scroll-control input:focus-visible { outline:2px solid #c6dfc3; outline-offset:1px; border-radius:8px; }
+.year-stage { min-height: 100%; }
+.month-labels { grid-template-columns: repeat(15, minmax(0, 1fr)); padding-right: 0; font-size: clamp(7px, 0.72vw, 9px); letter-spacing: 0.04em; }
+.timeline-line { background-image: repeating-linear-gradient(90deg, transparent 0 calc(6.666667% - 0.5px), rgba(217, 231, 225, 0.17) calc(6.666667% - 0.5px) 6.666667%), linear-gradient(90deg, rgba(217, 231, 225, 0.13), rgba(217, 231, 225, 0.28) 5%, rgba(217, 231, 225, 0.55) 50%, rgba(217, 231, 225, 0.28) 95%, transparent); }
+.timeline-title.launches-title { top: 24%; }
+.timeline-title.campaigns-title { top: 60%; }
+.timeline-title.events-title { top: 84%; }
+.timeline-launches .timeline-line,
+.timeline-launches .month-boundary,
+.timeline-launches .launch-moment { top: 24%; }
+.timeline-launches .month-labels { top: 33%; }
+.campaign-zones { top: 43%; bottom: 21%; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.branding-lane { top: calc(52% - 22px); }
+.selling-lane { top: calc(62% - 22px); }
+.always-on-lane { top: calc(72% - 22px); }
+.timeline-campaigns .campaign-lane .timeline-line,
+.timeline-campaigns .campaign-lane .month-boundary { top: 50%; }
+.timeline-campaigns .month-labels { top: 79%; }
+.timeline-events .timeline-line,
+.timeline-events .month-boundary,
+.timeline-events .event-marker { top: 84%; }
+.timeline-events .month-labels { top: 92%; }
+.new-year-zone { --zone-wash: rgba(136, 160, 125, 0.09); }
+.campaign-flow .flow-middle { stroke: rgba(217, 231, 225, 0.46); }
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .timeline-title { font-size: clamp(24px, 3vw, 32px); }
+  .zone-theme { font-size: clamp(11px, 1.35vw, 14px); }
+  .campaign-zone { padding: 9px 8px; }
+  .campaign-name { font-size: 10px; }
+  .campaign-dates { font-size: 7px; }
+  .moment-title { font-size: 12px; }
+  .moment-subtitle { font-size: 9px; }
+}
+
+@media (max-height: 720px) and (min-width: 701px) {
+  .timeline-title { font-size: clamp(23px, 2.8vw, 31px); }
+  .timeline-title.launches-title { top: 22%; }
+  .timeline-title.campaigns-title { top: 59%; }
+  .timeline-title.events-title { top: 83%; }
+  .timeline-launches .timeline-line,
+  .timeline-launches .month-boundary,
+  .timeline-launches .launch-moment { top: 22%; }
+  .timeline-launches .month-labels { top: 32%; }
+  .campaign-zones { top: 42%; bottom: 21%; }
+  .branding-lane { top: calc(51% - 22px); }
+  .selling-lane { top: calc(61% - 22px); }
+  .always-on-lane { top: calc(71% - 22px); }
+  .timeline-campaigns .month-labels { top: 78%; }
+  .timeline-events .timeline-line,
+  .timeline-events .month-boundary,
+  .timeline-events .event-marker { top: 83%; }
+  .timeline-events .month-labels { top: 91%; }
 }

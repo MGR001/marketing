@@ -28,4 +28,4 @@ The Dockerfile supplies the start command (`npm start`) and binds to Render's po
 
 ## Security
 
-The app requires `APP_BASIC_AUTH_USER` and `APP_BASIC_AUTH_PASSWORD` in production. Keep credentials and API keys in Render's environment settings, never in GitHub or chat. If an API key has been exposed, revoke it with the provider and replace it before deploying.
+The branded sign-in page checks the username and password against `APP_BASIC_AUTH_USER` and `APP_BASIC_AUTH_PASSWORD` in the Render environment. The server issues an HTTP-only session cookie after a successful login. Keep credentials and API keys in Render's environment settings, never in GitHub or chat. If an API key has been exposed, revoke it with the provider and replace it before deploying.

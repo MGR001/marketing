@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
-const { createHash, randomUUID, timingSafeEqual } = require('node:crypto');
+const { createHash, randomBytes, randomUUID, timingSafeEqual } = require('node:crypto');
 
 const ROOT = __dirname;
 
@@ -31,8 +31,15 @@ const CREW_RUNNER = path.join(ROOT, 'crewai', 'marketing_team.py');
 const MAX_BODY_BYTES = 1_000_000;
 const MAX_TEAM_RUNS = 30;
 const TEAM_RUN_TIMEOUT_MS = 900_000;
-const BASIC_AUTH_USER = process.env.APP_BASIC_AUTH_USER || '';
-const BASIC_AUTH_PASSWORD = process.env.APP_BASIC_AUTH_PASSWORD || '';
+const LOGIN_USER = process.env.APP_BASIC_AUTH_USER || '';
+const LOGIN_PASSWORD = process.env.APP_BASIC_AUTH_PASSWORD || '';
+const SESSION_COOKIE = 'libra_session';
+const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const MAX_LOGIN_ATTEMPTS = 10;
+const sessions = new Map();
+let loginAttemptWindowStarted = Date.now();
+let failedLoginAttempts = 0;
 const CREW_PYTHON = process.env.CREWAI_PYTHON || path.join(ROOT, '.crew-env', 'bin', 'python');
 
 async function initializeDataDirectory() {
@@ -53,16 +60,47 @@ function secureStringEqual(actual, expected) {
   return timingSafeEqual(actualHash, expectedHash) && actual === expected;
 }
 
+function sessionCookie(token, maxAgeSeconds) {
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAgeSeconds}${secure}`;
+}
+
+function sessionToken(request) {
+  const cookies = (request.headers.cookie || '').split(';');
+  const value = cookies.map((cookie) => cookie.trim()).find((cookie) => cookie.startsWith(`${SESSION_COOKIE}=`));
+  const token = value?.slice(SESSION_COOKIE.length + 1) || '';
+  return /^[a-f0-9]{64}$/.test(token) ? token : '';
+}
+
 function isAuthorized(request) {
-  if (!BASIC_AUTH_USER && !BASIC_AUTH_PASSWORD) return process.env.NODE_ENV !== 'production';
-  if (!BASIC_AUTH_USER || !BASIC_AUTH_PASSWORD) return false;
-  const match = request.headers.authorization?.match(/^Basic\s+([A-Za-z0-9+/=]+)$/i);
-  if (!match) return false;
-  const credentials = Buffer.from(match[1], 'base64').toString('utf8');
-  const separator = credentials.indexOf(':');
-  if (separator < 0) return false;
-  return secureStringEqual(credentials.slice(0, separator), BASIC_AUTH_USER)
-    && secureStringEqual(credentials.slice(separator + 1), BASIC_AUTH_PASSWORD);
+  if (!LOGIN_USER && !LOGIN_PASSWORD && process.env.NODE_ENV !== 'production') return true;
+  if (!LOGIN_USER || !LOGIN_PASSWORD) return false;
+  const token = sessionToken(request);
+  const session = token && sessions.get(token);
+  if (!session) return false;
+  if (session.expiresAt <= Date.now()) {
+    sessions.delete(token);
+    return false;
+  }
+  return true;
+}
+
+function safeReturnPath(value) {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//') || value.includes('\\')) return '/';
+  const pathname = value.split(/[?#]/, 1)[0];
+  return pathname === '/login' || pathname === '/login.html' ? '/' : value;
+}
+
+function redirect(response, location) {
+  response.writeHead(302, { Location: location, 'Cache-Control': 'no-store' });
+  response.end();
+}
+
+function trimExpiredSessions() {
+  const now = Date.now();
+  for (const [token, session] of sessions) {
+    if (session.expiresAt <= now) sessions.delete(token);
+  }
 }
 
 function hasSameOrigin(request) {
@@ -116,7 +154,7 @@ function validateTimeline(data) {
   if (!data || typeof data !== 'object' || !Number.isInteger(data.year) || data.year < 2000 || data.year > 2100) {
     return 'The timeline year is invalid.';
   }
-  if (!Array.isArray(data.themes) || data.themes.length !== 4) return 'Please provide exactly four seasonal themes.';
+  if (!Array.isArray(data.themes) || data.themes.length !== 5) return 'Please provide five seasonal themes, including Q1 2027.';
   if (!Array.isArray(data.launches) || !Array.isArray(data.campaigns) || !Array.isArray(data.events)) {
     return 'The launches, campaigns, or events list is missing.';
   }
@@ -370,19 +408,93 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  if (!isAuthorized(request)) {
-    response.writeHead(401, {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'no-store',
-      'WWW-Authenticate': 'Basic realm="Libra Marketing Workspace", charset="UTF-8"',
-      'X-Content-Type-Options': 'nosniff'
-    });
-    response.end('Authentication required.');
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method) && !hasSameOrigin(request)) {
+    sendJson(response, 403, { error: 'Cross-origin requests are not allowed.' });
     return;
   }
 
-  if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method) && !hasSameOrigin(request)) {
-    sendJson(response, 403, { error: 'Cross-origin requests are not allowed.' });
+  if (['/login', '/login.html'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
+    if (isAuthorized(request)) {
+      redirect(response, safeReturnPath(url.searchParams.get('next')));
+      return;
+    }
+    await serveStatic('/login.html', response);
+    return;
+  }
+
+  if (['/login.css', '/login.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
+    await serveStatic(url.pathname, response);
+    return;
+  }
+
+  if (url.pathname === '/api/session' && request.method === 'GET') {
+    sendJson(response, 200, { authenticated: isAuthorized(request) });
+    return;
+  }
+
+  if (url.pathname === '/api/login') {
+    if (request.method !== 'POST') {
+      response.setHeader('Allow', 'POST');
+      sendJson(response, 405, { error: 'Method not allowed.' });
+      return;
+    }
+    if (!LOGIN_USER || !LOGIN_PASSWORD) {
+      sendJson(response, 503, { error: 'Login is not configured. Set APP_BASIC_AUTH_USER and APP_BASIC_AUTH_PASSWORD in the service environment.' });
+      return;
+    }
+    const now = Date.now();
+    if (now - loginAttemptWindowStarted >= LOGIN_WINDOW_MS) {
+      loginAttemptWindowStarted = now;
+      failedLoginAttempts = 0;
+    }
+    if (failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
+      sendJson(response, 429, { error: 'Too many unsuccessful login attempts. Please try again in 15 minutes.' });
+      return;
+    }
+    try {
+      const credentials = await readRequestBody(request);
+      const username = typeof credentials?.username === 'string' ? credentials.username : '';
+      const password = typeof credentials?.password === 'string' ? credentials.password : '';
+      if (!secureStringEqual(username, LOGIN_USER) || !secureStringEqual(password, LOGIN_PASSWORD)) {
+        failedLoginAttempts += 1;
+        sendJson(response, 401, { error: 'Those credentials do not match. Check them and try again.' });
+        return;
+      }
+      failedLoginAttempts = 0;
+      trimExpiredSessions();
+      if (sessions.size >= 2000) {
+        sendJson(response, 503, { error: 'The sign-in service is temporarily full. Please try again shortly.' });
+        return;
+      }
+      const token = randomBytes(32).toString('hex');
+      sessions.set(token, { expiresAt: now + SESSION_TTL_MS });
+      response.setHeader('Set-Cookie', sessionCookie(token, Math.floor(SESSION_TTL_MS / 1000)));
+      sendJson(response, 200, { authenticated: true, redirectTo: safeReturnPath(credentials.next) });
+    } catch (error) {
+      const status = error instanceof SyntaxError || error.message === 'Request is too large.' ? 400 : 500;
+      sendJson(response, status, { error: status === 400 ? 'Enter a valid username and password.' : 'Sign-in failed unexpectedly. Please try again.' });
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/logout' && request.method === 'POST') {
+    const token = sessionToken(request);
+    if (token) sessions.delete(token);
+    response.setHeader('Set-Cookie', sessionCookie('', 0));
+    sendJson(response, 200, { loggedOut: true });
+    return;
+  }
+
+  if (!isAuthorized(request)) {
+    if (url.pathname.startsWith('/api/')) {
+      sendJson(response, 401, { error: 'Your session has expired. Sign in again to continue.' });
+      return;
+    }
+    if (['GET', 'HEAD'].includes(request.method)) {
+      redirect(response, `/login?next=${encodeURIComponent(`${url.pathname}${url.search}`)}`);
+      return;
+    }
+    sendJson(response, 401, { error: 'Your session has expired. Sign in again to continue.' });
     return;
   }
 
@@ -599,7 +711,7 @@ const server = http.createServer(async (request, response) => {
   await serveStatic(decodeURIComponent(url.pathname), response);
 });
 
-if (process.env.NODE_ENV === 'production' && (!BASIC_AUTH_USER || !BASIC_AUTH_PASSWORD)) {
+if (process.env.NODE_ENV === 'production' && (!LOGIN_USER || !LOGIN_PASSWORD)) {
   console.error('Refusing to start in production without APP_BASIC_AUTH_USER and APP_BASIC_AUTH_PASSWORD.');
   process.exitCode = 1;
 } else {
@@ -607,7 +719,7 @@ if (process.env.NODE_ENV === 'production' && (!BASIC_AUTH_USER || !BASIC_AUTH_PA
     server.listen(PORT, HOST, () => {
       console.log(`Timeline app running on ${HOST}:${PORT}`);
       console.log(`Persistent data directory: ${DATA_DIR}`);
-      if (BASIC_AUTH_USER && BASIC_AUTH_PASSWORD) console.log('HTTP Basic authentication is enabled.');
+      if (LOGIN_USER && LOGIN_PASSWORD) console.log('Login page authentication is enabled.');
     });
   }).catch((error) => {
     console.error(`Could not initialize data directory ${DATA_DIR}: ${error.message}`);

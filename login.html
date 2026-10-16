@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101613" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Sign in · Libra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/login.css" />
+    <script src="/login.js" defer></script>
+  </head>
+  <body>
+    <main class="login-shell">
+      <section class="login-card" aria-labelledby="login-title">
+        <a class="login-brand" href="/login" aria-label="Libra workspace sign in">
+          <span>Libra</span><i aria-hidden="true">×</i> WK LR Benelux
+        </a>
+        <p class="login-eyebrow">PRIVATE MARKETING WORKSPACE</p>
+        <h1 id="login-title">Good work<br />starts <em>together.</em></h1>
+        <p class="login-copy">Sign in to open your timeline and marketing team workspace.</p>
+        <form id="login-form">
+          <label class="login-field" for="username">Username
+            <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus />
+          </label>
+          <label class="login-field" for="password">Password
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <p class="login-error" id="login-error" role="alert" hidden></p>
+          <button class="login-submit" id="login-submit" type="submit"><span>Sign in</span><span aria-hidden="true">→</span></button>
+        </form>
+        <p class="login-footnote">Authorized access only · Libra Marketing / Benelux</p>
+      </section>
+      <div class="login-orbit orbit-one" aria-hidden="true"></div>
+      <div class="login-orbit orbit-two" aria-hidden="true"></div>
+    </main>
+  </body>
+</html>
