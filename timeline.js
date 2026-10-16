@@ -12,6 +12,7 @@ const zoomLevelLabel = document.querySelector('#zoom-level');
 const zoomOutButton = document.querySelector('#zoom-out');
 const zoomInButton = document.querySelector('#zoom-in');
 const zoomResetButton = document.querySelector('#zoom-reset');
+const exportExcelButton = document.querySelector('#export-excel');
 const MIN_ZOOM = 0.75;
 const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.25;
@@ -73,6 +74,37 @@ function setZoom(nextZoom, preserveCenter = true) {
 zoomOutButton.addEventListener('click', () => setZoom(zoomLevel - ZOOM_STEP));
 zoomInButton.addEventListener('click', () => setZoom(zoomLevel + ZOOM_STEP));
 zoomResetButton.addEventListener('click', () => setZoom(1));
+exportExcelButton.addEventListener('click', async () => {
+  exportExcelButton.disabled = true;
+  exportExcelButton.textContent = '…';
+  try {
+    const response = await fetch('/api/timeline/export.xlsx', { cache: 'no-store', credentials: 'same-origin' });
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      throw new Error(result.error || 'The Excel workbook could not be downloaded.');
+    }
+    const workbook = await response.blob();
+    const link = document.createElement('a');
+    const objectUrl = URL.createObjectURL(workbook);
+    link.href = objectUrl;
+    link.download = response.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1] || `libra-marketing-timeline-${timelineData?.year || new Date().getFullYear()}.xlsx`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    exportExcelButton.textContent = 'Done';
+  } catch (error) {
+    const status = document.querySelector('#timeline-load-error');
+    status.textContent = error.message;
+    status.hidden = false;
+    exportExcelButton.textContent = 'Retry';
+  } finally {
+    window.setTimeout(() => {
+      exportExcelButton.disabled = false;
+      exportExcelButton.textContent = 'Export';
+    }, 1800);
+  }
+});
 updateZoomControls();
 
 function keepLaunchLabelsInView() {

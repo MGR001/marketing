@@ -930,7 +930,8 @@ body { background: #101613; }
 }
 
 .zoom-button,
-.zoom-reset {
+.zoom-reset,
+.zoom-export {
   min-width: 31px;
   height: 31px;
   border: 1px solid transparent;
@@ -942,10 +943,13 @@ body { background: #101613; }
 }
 
 .zoom-button:hover:not(:disabled),
-.zoom-reset:hover { border-color: rgba(184, 212, 186, 0.22); background: rgba(42, 57, 46, 0.7); }
+.zoom-reset:hover,
+.zoom-export:hover:not(:disabled) { border-color: rgba(184, 212, 186, 0.22); background: rgba(42, 57, 46, 0.7); }
 .zoom-button:disabled { opacity: 0.35; cursor: not-allowed; }
 .zoom-level { min-width: 42px; color: rgba(213, 226, 213, 0.75); font: 9px "DM Mono", monospace; text-align: center; }
 .zoom-reset { min-width: 45px; padding: 0 7px; border-left: 1px solid rgba(237, 244, 237, 0.1); border-radius: 0 8px 8px 0; color: rgba(213, 226, 213, 0.72); font-size: 10px; }
+.zoom-export { min-width: 52px; padding: 0 8px; border-radius: 8px; color: #c5d9c1; font: 500 10px/1 "DM Sans", sans-serif; }
+.zoom-export:disabled { opacity: 0.55; cursor: wait; }
 
 .workspace-menu {
   position: relative;
@@ -1051,7 +1055,7 @@ body { background: #101613; }
 }
 
 .workspace-menu-popover a:focus-visible { outline: 2px solid #a8c2ab; outline-offset: 2px; }
-.zoom-button:focus-visible,.zoom-reset:focus-visible { outline: 2px solid #a8c2ab; outline-offset: 2px; }
+.zoom-button:focus-visible,.zoom-reset:focus-visible,.zoom-export:focus-visible { outline: 2px solid #a8c2ab; outline-offset: 2px; }
 .workspace-menu-popover a span { padding-left: 8px; color: #a8c2ab; }
 
 .timeline-load-error {
